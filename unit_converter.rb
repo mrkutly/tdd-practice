@@ -19,15 +19,32 @@ class UnitConverter
 
   private
 
-  CONVERSION_FACTORS = {
-    cup: {
-      liter: 0.236588
+  FACTORS = {
+    liter: {
+      cup: 4.226775,
+      liter: 1,
+      pint: 2.113388
+    },
+    gram: {
+      gram: 1,
+      kilogram: 1000,
     }
   }
 
   def conversion_factor(from:, to:)
-    CONVERSION_FACTORS[from][to] ||
+    dimension = common_dimension(from, to)
+    if !dimension.nil?
+      FACTORS[dimension][to] / FACTORS[dimension][from]
+    else
       raise(DimensionalMismatchError, "Can't convert #{from} to #{to}")
+    end  
+  end
+
+  def common_dimension(from, to)
+    FACTORS.keys.find do |canonical_unit|
+      FACTORS[canonical_unit].keys.include?(from) &&
+        FACTORS[canonical_unit].keys.include?(to)
+    end
   end
 end
 
